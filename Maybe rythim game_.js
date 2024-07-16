@@ -36,8 +36,7 @@ const song = tune`
 1000: G5-1000,
 1000: E4-1000,
 1000: D4-1000,
-1000: G4-1000,
-11000`;
+1000: G4-1000`;
 
 setLegend([right_note, bitmap`
 ................
@@ -196,14 +195,16 @@ ftgh
 ....
 ....`
 ]
-test = []
+
 setMap(levels[level])
-test = song.split(/[,:-]/);
+split_song = song.split(',');
 sprites = [right_note, left_note, up_note, down_note]
+tempo = test[0];
+
 async function spawnNote() {
-  tempo = test[0] / 7;
+
   const randomSprite = sprites[Math.floor(Math.random() * sprites.length)];
-  console.log(randomSprite);
+
   if (randomSprite === left_note) {
     addSprite(0, 6, left_note)
   }
@@ -221,17 +222,42 @@ async function spawnNote() {
 }
 
 async function game() {
+  setTimeout(() => {
+    playTune(song);
+  }, 5.5 * tempo);
+  for (i = 0; i < split_song.length; i++) {
+    console.log(split_song[i]);
+    if (/^\d+$/.test(split_song[i].replace("\n", ""))) {
 
-  for (i = 0; i < test.length; i++) {
-    console.log(test[i]);
-    if (!isNaN(parseInt(test[i]))) {
-      await sleep(test[i]);
-      console.log(test[i]);
+      getAll().forEach(sprite => {
+        sprite.y -= 1;
+      });
+
+      await sleep(tempo);
+
+    } else {
+      spawnNote();
+      getAll().forEach(sprite => {
+        sprite.y -= 1;
+      });
+
+      await sleep(tempo);
 
     }
 
   }
+  for (i = 0; i < (5.5 * tempo) / 1000; i++) {
+    getAll().forEach(sprite => {
+      sprite.y -= 1;
+    });
+
+    await sleep(tempo);
+
+  }
+
+
+
 
 }
 
-spawnNote();
+game();
