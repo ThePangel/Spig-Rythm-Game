@@ -17,28 +17,29 @@ const down_note = "d";
 
 
 const song = tune`
-1000: E4-1000,
-1000: F4-1000,
-1000,
-1000: B4-1000,
-1000: B4-1000,
-1000: E5-1000,
-1000: G4-1000,
-1000: E5-1000,
-1000: G4-1000,
-1000: E5-1000,
-1000: A4-1000,
-1000: E4-1000,
-1000: D5-1000,
-1000,
-1000: G4-1000,
-1000,
-1000: E5-1000,
-1000: G5-1000,
-1000: E4-1000,
-1000: D4-1000,
-1000: G4-1000,
-11000`;
+750: E4-750,
+750: F4-750,
+750: G4~750,
+750: A4~750,
+750: D5~750,
+750: D4~750,
+750: B4~750,
+750: E4~750,
+750: A4~750,
+750: B4~750,
+750: D5~750,
+750: C5~750,
+750: A4~750,
+750: F4~750,
+750: A4~750,
+750: C5~750,
+750: F4~750,
+750: D5~750,
+750: B4~750,
+750: G4~750,
+750: E4~750,
+750: F4~750,
+7500`;
 
 setLegend([right_note, bitmap`
 ................
@@ -198,59 +199,105 @@ ftgh
 ....`
 ]
 let score = 0;
+let combo = 0;
+
 setMap(levels[level])
 split_song = song.split(',');
 sprites = [right_note, left_note, up_note, down_note]
 tempo = split_song[0].split(':');
 tempo = parseInt(tempo[0]);
 console.log(tempo);
-text = addText(`${score}`, {
-  x: 1,
+let isPressed = false
+textScore = addText(`${score}`, {
+  x: 0,
   y: 2,
+  color: color`5`
+})
+textCombo = addText(`x${combo}`, {
+  x: 0,
+  y: 4,
   color: color`5`
 })
 
 onInput("w", () => {
-  if (getTile(1, 0).length == 2) score++;
-  console.log(score);
-  text = addText(`${score}`, {
-    x: 1,
-    y: 2,
-    color: color`5`
-  })
+  
+  if (getTile(1, 0).length == 2 && !isPressed) {
+    score += 150;
+    combo++;
+    isPressed = true
+    clearText();
+    textScore = addText(`${score}`, {
+      x: 0,
+      y: 2,
+      color: color`5`
+    })
+    textCombo = addText(`x${combo}`, {
+      x: 0,
+      y: 4,
+      color: color`5`
+    })
+  }
+
 
 });
 
 onInput("a", () => {
-  if (getTile(0, 0).length == 2) score++;
-  console.log(score);
-  text = addText(`${score}`, {
-    x: 1,
-    y: 2,
-    color: color`5`
-  })
+  if (getTile(0, 0).length == 2 && !isPressed) {
+    score += 150;
+    combo++;
+    isPressed = true
+    clearText();
+    textScore = addText(`${score}`, {
+      x: 0,
+      y: 2,
+      color: color`5`
+    })
+    textCombo = addText(`x${combo}`, {
+      x: 0,
+      y: 4,
+      color: color`5`
+    })
+  }
 
 });
 
 onInput("s", () => {
-  if (getTile(2, 0).length == 2) score++;
-  console.log(score);
-  text = addText(`${score}`, {
-    x: 1,
-    y: 2,
-    color: color`5`
-  })
+  if (getTile(2, 0).length == 2 && !isPressed) {
+    score += 150;
+    combo++;
+    isPressed = true
+    clearText();
+    textScore = addText(`${score}`, {
+      x: 0,
+      y: 2,
+      color: color`5`
+    })
+    textCombo = addText(`x${combo}`, {
+      x: 0,
+      y: 4,
+      color: color`5`
+    })
+  }
 
 });
 
 onInput("d", () => {
-  if (getTile(3, 0).length == 2) score++;
-  console.log(score);
-  text = addText(`${score}`, {
-    x: 1,
-    y: 2,
-    color: color`5`
-  })
+  if (getTile(3, 0).length == 2 && !isPressed) {
+    score += 150;
+    combo++;
+    isPressed = true
+    clearText();
+    textScore = addText(`${score}`, {
+      x: 0,
+      y: 2,
+      color: color`5`
+    })
+    textCombo = addText(`x${combo}`, {
+      x: 0,
+      y: 4,
+      color: color`5`
+    })
+  }
 
 });
 
@@ -276,11 +323,13 @@ async function spawnNote() {
 }
 
 async function game() {
-  console.log(5.5 * tempo);
+  
   setTimeout(() => {
     playTune(song);
   }, 5.5 * tempo);
   for (i = 0; i < split_song.length; i++) {
+    console.log("yes" + combo);
+    isPressed = false;
     for (j = 0; j < 4; j++) {
       getTile(j, 0).forEach(sprite => {
         if (sprite.type === 'r' || sprite.type === 'l' || sprite.type === 'u' || sprite.type === 'd') {
@@ -307,12 +356,24 @@ async function game() {
       await sleep(tempo);
 
     }
+    if (!isPressed) {
+      combo = 0;
+      clearText();
+      textCombo = addText(`x${combo}`, {
+        x: 0,
+        y: 4,
+        color: color`5`
+      })
+    }
 
 
-
+  
   }
   time = 0
-  while (time != 5.5 * tempo) {
+  while (time <= (5.5 * tempo) - tempo) {
+    console.log("no"+combo);
+    console.log(time);
+    isPressed = false;
     for (j = 0; j < 4; j++) {
       getTile(j, 0).forEach(sprite => {
         if (sprite.type === 'r' || sprite.type === 'l' || sprite.type === 'u' || sprite.type === 'd') {
@@ -324,11 +385,22 @@ async function game() {
     getAll().forEach(sprite => {
       sprite.y -= 1;
     });
-
+   
     await sleep(tempo);
+    
+     if (!isPressed && time >= 5.5 * tempo) {
+      combo = 0;
+      clearText();
+       textCombo = addText(`x${combo}`, {
+        x: 0,
+        y: 4,
+        color: color`5`
+      })
+    }
     time += tempo;
+    console.log("noy"+combo);
   }
-
+  
 
 
 
