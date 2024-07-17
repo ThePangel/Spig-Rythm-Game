@@ -15,6 +15,7 @@ const left_note = "l";
 const up_note = "u";
 const down_note = "d";
 
+
 const song = tune`
 1000: E4-1000,
 1000: F4-1000,
@@ -36,7 +37,8 @@ const song = tune`
 1000: G5-1000,
 1000: E4-1000,
 1000: D4-1000,
-1000: G4-1000`;
+1000: G4-1000,
+11000`;
 
 setLegend([right_note, bitmap`
 ................
@@ -195,11 +197,63 @@ ftgh
 ....
 ....`
 ]
-
+let score = 0;
 setMap(levels[level])
 split_song = song.split(',');
 sprites = [right_note, left_note, up_note, down_note]
-tempo = test[0];
+tempo = split_song[0].split(':');
+tempo = parseInt(tempo[0]);
+console.log(tempo);
+text = addText(`${score}`, {
+  x: 1,
+  y: 2,
+  color: color`5`
+})
+
+onInput("w", () => {
+  if (getTile(1, 0).length == 2) score++;
+  console.log(score);
+  text = addText(`${score}`, {
+    x: 1,
+    y: 2,
+    color: color`5`
+  })
+
+});
+
+onInput("a", () => {
+  if (getTile(0, 0).length == 2) score++;
+  console.log(score);
+  text = addText(`${score}`, {
+    x: 1,
+    y: 2,
+    color: color`5`
+  })
+
+});
+
+onInput("s", () => {
+  if (getTile(2, 0).length == 2) score++;
+  console.log(score);
+  text = addText(`${score}`, {
+    x: 1,
+    y: 2,
+    color: color`5`
+  })
+
+});
+
+onInput("d", () => {
+  if (getTile(3, 0).length == 2) score++;
+  console.log(score);
+  text = addText(`${score}`, {
+    x: 1,
+    y: 2,
+    color: color`5`
+  })
+
+});
+
 
 async function spawnNote() {
 
@@ -222,11 +276,20 @@ async function spawnNote() {
 }
 
 async function game() {
+  console.log(5.5 * tempo);
   setTimeout(() => {
     playTune(song);
   }, 5.5 * tempo);
   for (i = 0; i < split_song.length; i++) {
-    console.log(split_song[i]);
+    for (j = 0; j < 4; j++) {
+      getTile(j, 0).forEach(sprite => {
+        if (sprite.type === 'r' || sprite.type === 'l' || sprite.type === 'u' || sprite.type === 'd') {
+          sprite.remove(); // Remove the specific sprite
+        }
+      });
+
+    }
+    //console.log(split_song[i]);
     if (/^\d+$/.test(split_song[i].replace("\n", ""))) {
 
       getAll().forEach(sprite => {
@@ -245,14 +308,25 @@ async function game() {
 
     }
 
+
+
   }
-  for (i = 0; i < (5.5 * tempo) / 1000; i++) {
+  time = 0
+  while (time != 5.5 * tempo) {
+    for (j = 0; j < 4; j++) {
+      getTile(j, 0).forEach(sprite => {
+        if (sprite.type === 'r' || sprite.type === 'l' || sprite.type === 'u' || sprite.type === 'd') {
+          sprite.remove(); // Remove the specific sprite
+        }
+      });
+
+    }
     getAll().forEach(sprite => {
       sprite.y -= 1;
     });
 
     await sleep(tempo);
-
+    time += tempo;
   }
 
 
