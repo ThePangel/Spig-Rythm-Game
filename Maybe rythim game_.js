@@ -14,32 +14,34 @@ const right_note = "r";
 const left_note = "l";
 const up_note = "u";
 const down_note = "d";
+const cursor = "c";
+const start_button = "s";
 
 
 const song = tune`
-750: E4-750,
-750: F4-750,
-750: G4~750,
-750: A4~750,
-750: D5~750,
-750: D4~750,
-750: B4~750,
-750: E4~750,
-750: A4~750,
-750: B4~750,
-750: D5~750,
-750: C5~750,
-750: A4~750,
-750: F4~750,
-750: A4~750,
-750: C5~750,
-750: F4~750,
-750: D5~750,
-750: B4~750,
-750: G4~750,
-750: E4~750,
-750: F4~750,
-7500`;
+1000: E4-1000,
+1000: F4-1000,
+1000: G4~1000,
+1000: A4~1000,
+1000: D5~1000,
+1000: D4~1000,
+1000: B4~1000,
+1000: E4~1000,
+1000: A4~1000,
+1000: B4~1000,
+1000: D5~1000,
+1000: C5~1000,
+1000: A4~1000,
+1000: F4~1000,
+1000: A4~1000,
+1000: C5~1000,
+1000: F4~1000,
+1000: D5~1000,
+1000: B4~1000,
+1000: G4~1000,
+1000: E4~1000,
+1000: F4~1000,
+10000`;
 
 setLegend([right_note, bitmap`
 ................
@@ -176,7 +178,42 @@ setLegend([right_note, bitmap`
 .......000......
 ................
 ................
-................`], );
+................`],
+  [cursor, bitmap`
+222222222222....
+211111111112....
+211111111112....
+211111111122....
+21111111122.....
+2111111122......
+2111111112......
+21111111112.....
+211112111112....
+2111222111112...
+21122..2111112..
+2222....211112..
+.........21112..
+..........2222..
+................
+................`],
+  [start_button, bitmap`
+................
+................
+................
+................
+0000000000000000
+0222222222222220
+0200020002000020
+0202222022022020
+0200022022000020
+0222022022020220
+0200022022022020
+0222222222222220
+0000000000000000
+................
+................
+................`],
+);
 
 
 async function sleep(ms) {
@@ -189,6 +226,12 @@ async function sleep(ms) {
 
 let level = 0
 const levels = [
+
+  map`
+.....
+..s..
+...c.
+.....`,
   map`
 ftgh
 ....
@@ -196,7 +239,7 @@ ftgh
 ....
 ....
 ....
-....`
+....`,
 ]
 let score = 0;
 let combo = 0;
@@ -208,19 +251,9 @@ tempo = split_song[0].split(':');
 tempo = parseInt(tempo[0]);
 console.log(tempo);
 let isPressed = false
-textScore = addText(`${score}`, {
-  x: 0,
-  y: 2,
-  color: color`5`
-})
-textCombo = addText(`x${combo}`, {
-  x: 0,
-  y: 4,
-  color: color`5`
-})
+addText("Rythm Game", { x: 5, y: 3, color: color`0` });
 
 onInput("w", () => {
-  
   if (getTile(1, 0).length == 2 && !isPressed) {
     score += 150;
     combo++;
@@ -237,7 +270,7 @@ onInput("w", () => {
       color: color`5`
     })
   }
-
+  if (level == 0) getFirst(cursor).y -= 1;
 
 });
 
@@ -258,6 +291,7 @@ onInput("a", () => {
       color: color`5`
     })
   }
+  if (level == 0) getFirst(cursor).x -= 1;
 
 });
 
@@ -278,6 +312,7 @@ onInput("s", () => {
       color: color`5`
     })
   }
+  if (level == 0) getFirst(cursor).y += 1;
 
 });
 
@@ -298,6 +333,7 @@ onInput("d", () => {
       color: color`5`
     })
   }
+  if (level == 0) getFirst(cursor).x += 1;
 
 });
 
@@ -322,13 +358,29 @@ async function spawnNote() {
 
 }
 
-async function game() {
+
+
+async function start() {
+  while (level == 0) {
+    console.log(getTile(2, 1));
+    if (getTile(2, 1).length >= 2) {
+      level = 1;
+      setMap(levels[level]);
+      level1();
+    }
+   await sleep(1000);   
+  }
   
+}
+
+async function level1() {
+  
+  clearText();
+  console.log(5.5 * tempo);
   setTimeout(() => {
     playTune(song);
   }, 5.5 * tempo);
   for (i = 0; i < split_song.length; i++) {
-    console.log("yes" + combo);
     isPressed = false;
     for (j = 0; j < 4; j++) {
       getTile(j, 0).forEach(sprite => {
@@ -358,7 +410,14 @@ async function game() {
     }
     if (!isPressed) {
       combo = 0;
+
       clearText();
+
+      textScore = addText(`${score}`, {
+        x: 0,
+        y: 2,
+        color: color`5`
+      })
       textCombo = addText(`x${combo}`, {
         x: 0,
         y: 4,
@@ -367,12 +426,10 @@ async function game() {
     }
 
 
-  
+
   }
   time = 0
-  while (time <= (5.5 * tempo) - tempo) {
-    console.log("no"+combo);
-    console.log(time);
+  while (time != 5.5 * tempo) {
     isPressed = false;
     for (j = 0; j < 4; j++) {
       getTile(j, 0).forEach(sprite => {
@@ -385,25 +442,26 @@ async function game() {
     getAll().forEach(sprite => {
       sprite.y -= 1;
     });
-   
-    await sleep(tempo);
-    
-     if (!isPressed && time >= 5.5 * tempo) {
-      combo = 0;
+    if (!isPressed) {
       clearText();
-       textCombo = addText(`x${combo}`, {
+      textScore = addText(`${score}`, {
+        x: 0,
+        y: 2,
+        color: color`5`
+      })
+      textCombo = addText(`x${combo}`, {
         x: 0,
         y: 4,
         color: color`5`
       })
     }
+    await sleep(tempo);
     time += tempo;
-    console.log("noy"+combo);
   }
-  
+
 
 
 
 }
 
-game();
+start();
