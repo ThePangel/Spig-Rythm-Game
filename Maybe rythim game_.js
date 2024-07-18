@@ -1,8 +1,8 @@
 /*
 
-@title: 
+@title: Generic Rythm Game
 @author: ThePangel
-@tags: []
+@tags: [music, rythm]
 @addedOn: 2024-00-00
 */
 
@@ -19,29 +19,38 @@ const start_button = "s";
 
 
 const song = tune`
-1000: E4-1000,
-1000: F4-1000,
-1000: G4~1000,
-1000: A4~1000,
-1000: D5~1000,
-1000: D4~1000,
-1000: B4~1000,
-1000: E4~1000,
-1000: A4~1000,
-1000: B4~1000,
-1000: D5~1000,
-1000: C5~1000,
-1000: A4~1000,
-1000: F4~1000,
-1000: A4~1000,
-1000: C5~1000,
-1000: F4~1000,
-1000: D5~1000,
-1000: B4~1000,
-1000: G4~1000,
-1000: E4~1000,
-1000: F4~1000,
-10000`;
+250: C4-250,
+250: C4-250,
+250: D4-250,
+250: C4-250,
+250: E4-250,
+250: F4/250,
+250: D4/250,
+250: E4-250,
+250,
+250: D4/250,
+250: D4-250,
+250: C4-250,
+250,
+250: D4/250,
+250: E4-250,
+250: F4/250,
+250,
+250: F4-250,
+250: F4-250,
+250,
+250: G4/250,
+250,
+250: C4-250,
+250: D4-250,
+250: E4/250,
+250: F4-250,
+250: E4-250,
+250: D4/250,
+250: F4-250,
+250: G4/250,
+250: D4/250,
+250: F4-250`;
 
 setLegend([right_note, bitmap`
 ................
@@ -180,20 +189,20 @@ setLegend([right_note, bitmap`
 ................
 ................`],
   [cursor, bitmap`
-222222222222....
-211111111112....
-211111111112....
-211111111122....
-21111111122.....
-2111111122......
-2111111112......
-21111111112.....
-211112111112....
-2111222111112...
-21122..2111112..
-2222....211112..
-.........21112..
-..........2222..
+................
+.1111111111.....
+.1111111111.....
+.111111111......
+.11111111.......
+.1111111........
+.11111111.......
+.111111111......
+.1111.11111.....
+.111...11111....
+.11.....11111...
+.........1111...
+..........111...
+................
 ................
 ................`],
   [start_button, bitmap`
@@ -240,6 +249,11 @@ ftgh
 ....
 ....
 ....`,
+  map`
+.....
+.....
+.....
+.....`
 ]
 let score = 0;
 let combo = 0;
@@ -249,14 +263,17 @@ split_song = song.split(',');
 sprites = [right_note, left_note, up_note, down_note]
 tempo = split_song[0].split(':');
 tempo = parseInt(tempo[0]);
-console.log(tempo);
+
 let isPressed = false
-addText("Rythm Game", { x: 5, y: 3, color: color`0` });
+let highest_combo = 0;
+
 
 onInput("w", () => {
   if (getTile(1, 0).length == 2 && !isPressed) {
     score += 150;
     combo++;
+
+    if (combo >= highest_combo) highest_combo = combo;
     isPressed = true
     clearText();
     textScore = addText(`${score}`, {
@@ -269,8 +286,26 @@ onInput("w", () => {
       y: 4,
       color: color`5`
     })
+  } else if (getTile(1, 0).length == 1 && !isPressed) {
+    isPressed = true
+    score -= 100;
+    combo = 0;
+    clearText();
+    textScore = addText(`${score}`, {
+      x: 0,
+      y: 2,
+      color: color`5`
+    })
+    textCombo = addText(`x${combo}`, {
+      x: 0,
+      y: 4,
+      color: color`5`
+    })
+
   }
-  if (level == 0) getFirst(cursor).y -= 1;
+  if (level == 0) getFirst(cursor).y -= 1; 
+  else if (level == 2) start();
+  
 
 });
 
@@ -278,6 +313,7 @@ onInput("a", () => {
   if (getTile(0, 0).length == 2 && !isPressed) {
     score += 150;
     combo++;
+    if (combo >= highest_combo) highest_combo = combo;
     isPressed = true
     clearText();
     textScore = addText(`${score}`, {
@@ -290,15 +326,32 @@ onInput("a", () => {
       y: 4,
       color: color`5`
     })
+  } else if (getTile(0, 0).length == 1 && !isPressed) {
+    isPressed = true
+    score -= 100;
+    combo = 0;
+    clearText();
+    textScore = addText(`${score}`, {
+      x: 0,
+      y: 2,
+      color: color`5`
+    })
+    textCombo = addText(`x${combo}`, {
+      x: 0,
+      y: 4,
+      color: color`5`
+    })
+
   }
   if (level == 0) getFirst(cursor).x -= 1;
-
+  else if (level == 2) start();
 });
 
 onInput("s", () => {
   if (getTile(2, 0).length == 2 && !isPressed) {
     score += 150;
     combo++;
+    if (combo >= highest_combo) highest_combo = combo;
     isPressed = true
     clearText();
     textScore = addText(`${score}`, {
@@ -311,15 +364,32 @@ onInput("s", () => {
       y: 4,
       color: color`5`
     })
+  } else if (getTile(2, 0).length == 1 && !isPressed) {
+    isPressed = true
+    score -= 100;
+    combo = 0;
+    clearText();
+    textScore = addText(`${score}`, {
+      x: 0,
+      y: 2,
+      color: color`5`
+    })
+    textCombo = addText(`x${combo}`, {
+      x: 0,
+      y: 4,
+      color: color`5`
+    })
+
   }
   if (level == 0) getFirst(cursor).y += 1;
-
+  else if (level == 2) start();
 });
 
 onInput("d", () => {
   if (getTile(3, 0).length == 2 && !isPressed) {
     score += 150;
     combo++;
+    if (combo >= highest_combo) highest_combo = combo;
     isPressed = true
     clearText();
     textScore = addText(`${score}`, {
@@ -332,9 +402,25 @@ onInput("d", () => {
       y: 4,
       color: color`5`
     })
+  } else if (getTile(3, 0).length == 1 && !isPressed) {
+    isPressed = true
+    score -= 100;
+    combo = 0;
+    clearText();
+    textScore = addText(`${score}`, {
+      x: 0,
+      y: 2,
+      color: color`5`
+    })
+    textCombo = addText(`x${combo}`, {
+      x: 0,
+      y: 4,
+      color: color`5`
+    })
+
   }
   if (level == 0) getFirst(cursor).x += 1;
-
+  else if (level == 2) start();
 });
 
 
@@ -361,22 +447,38 @@ async function spawnNote() {
 
 
 async function start() {
+  clearText();
+  level = 0
+  setMap(levels[level])
+  addText("Rythm Game", { x: 5, y: 3, color: color`0` });
   while (level == 0) {
-    console.log(getTile(2, 1));
+    
     if (getTile(2, 1).length >= 2) {
       level = 1;
       setMap(levels[level]);
       level1();
     }
-   await sleep(1000);   
+    await sleep(1000);
   }
-  
+
+}
+
+async function end() {
+  level = 2;
+  setMap(levels[level])
+  getAll().forEach(sprite => sprite.remove())
+  clearText();
+  addText(`You scored`, { x: 5, y: 5, color: color`0` })
+  addText(`${score} points!`, { x: 5, y: 6, color: color`0` })
+  addText(`Highest combo x${highest_combo}`, { x: 2, y: 8, color: color`0` })
+  addText(`Press any button`, { x: 2, y: 10, color: color`0` })
+  addText(`to try again`, { x: 3, y: 11, color: color`0` })
 }
 
 async function level1() {
-  
+
   clearText();
-  console.log(5.5 * tempo);
+
   setTimeout(() => {
     playTune(song);
   }, 5.5 * tempo);
@@ -385,12 +487,12 @@ async function level1() {
     for (j = 0; j < 4; j++) {
       getTile(j, 0).forEach(sprite => {
         if (sprite.type === 'r' || sprite.type === 'l' || sprite.type === 'u' || sprite.type === 'd') {
-          sprite.remove(); // Remove the specific sprite
+          sprite.remove();
         }
       });
 
     }
-    //console.log(split_song[i]);
+
     if (/^\d+$/.test(split_song[i].replace("\n", ""))) {
 
       getAll().forEach(sprite => {
@@ -408,7 +510,9 @@ async function level1() {
       await sleep(tempo);
 
     }
-    if (!isPressed) {
+    if (!isPressed && (getTile(0, 0).length == 2 || getTile(1, 0).length == 2 || getTile(2, 0).length == 2 || getTile(3, 0).length == 2)) {
+      score -= 150;
+
       combo = 0;
 
       clearText();
@@ -429,12 +533,12 @@ async function level1() {
 
   }
   time = 0
-  while (time != 5.5 * tempo) {
+  while (time <= 7.5 * tempo) {
     isPressed = false;
     for (j = 0; j < 4; j++) {
       getTile(j, 0).forEach(sprite => {
         if (sprite.type === 'r' || sprite.type === 'l' || sprite.type === 'u' || sprite.type === 'd') {
-          sprite.remove(); // Remove the specific sprite
+          sprite.remove();
         }
       });
 
@@ -442,7 +546,12 @@ async function level1() {
     getAll().forEach(sprite => {
       sprite.y -= 1;
     });
-    if (!isPressed) {
+
+    await sleep(tempo);
+    time += tempo;
+    if (!isPressed && (getTile(0, 0).length == 2 || getTile(1, 0).length == 2 || getTile(2, 0).length == 2 || getTile(3, 0).length == 2)) {
+      score -= 150;
+      combo = 0;
       clearText();
       textScore = addText(`${score}`, {
         x: 0,
@@ -455,13 +564,12 @@ async function level1() {
         color: color`5`
       })
     }
-    await sleep(tempo);
-    time += tempo;
+
   }
 
 
 
-
+  end();
 }
 
 start();
